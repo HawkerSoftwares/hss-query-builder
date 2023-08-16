@@ -1,0 +1,26 @@
+{
+  "name": "hss-query-builder",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^16.2.0",
+    "@angular/core": "^16.2.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false,
+  "license": "MIT",
+  "author": "HSS",
+  "description": "A modernized Angular 16 query builder based on jQuery QueryBuilder. Support for heavy customization with Angular components and provides a flexible way to handle custom data types.  Angular version 16, 15, 14, 13, 12, 11, 10, 9,8,6,4 ",
+  "keywords": [
+    "angular 2",
+    "angular 4 query builder",
+    "angular query builder",
+    "query builder",
+    "angular latest query builder"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/HawkerSoftwares/hss-query-builder"
+  }
+}
