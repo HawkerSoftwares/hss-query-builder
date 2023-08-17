@@ -23,17 +23,13 @@ jobs:
 
     - name: Build library
       run: npm run build-package # Replace with your build command
-
-    - name: Navigate to library build output
-      run: cd projects/hss-query-builder-lib/src
-
-    - name: Navigate to library build output
-      run: pwd
-
-    - name: Navigate to library build output
-      run: ls
-
-    - name: Publish to npm
-      run: npm publish
+    
+    - name: Authenticate with npm
+      run: npm login
       env:
         NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}} # NPM_TOKEN should be set in your GitHub repository secrets
+
+    - name: Navigate to library build output and Publish to npm
+      run: |
+        cd dist/hss-query-builder-lib
+        npm publish
