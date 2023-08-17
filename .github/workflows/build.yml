@@ -27,7 +27,13 @@ jobs:
     - name: Navigate to library build output
       run: cd /home/runner/work/hss-query-builder/hss-query-builder/dist/hss-query-builder-lib
 
-    - name: Publish to npm
-      run: npm publish
-      env:
-        NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}} # NPM_TOKEN should be set in your GitHub repository secrets
+    - name: Navigate to library build output
+      run: pwd
+
+    - name: Navigate to library build output
+      run: ls
+
+    # - name: Publish to npm
+    #   run: npm publish
+    #   env:
+    #     NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}} # NPM_TOKEN should be set in your GitHub repository secrets
