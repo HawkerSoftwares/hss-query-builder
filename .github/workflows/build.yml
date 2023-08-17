@@ -33,7 +33,7 @@ jobs:
     - name: Navigate to library build output
       run: ls
 
-    # - name: Publish to npm
-    #   run: npm publish
-    #   env:
-    #     NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}} # NPM_TOKEN should be set in your GitHub repository secrets
+    - name: Publish to npm
+      run: npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}} # NPM_TOKEN should be set in your GitHub repository secrets
