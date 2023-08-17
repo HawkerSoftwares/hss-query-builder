@@ -24,8 +24,8 @@ jobs:
     - name: Build library
       run: npm run build-package # Replace with your build command
 
-    # - name: Navigate to library build output
-    #   run: cd ./dist/hss-query-builder-lib
+    - name: Navigate to library build output
+      run: cd /home/runner/work/hss-query-builder/hss-query-builder/dist/hss-query-builder-lib
 
     - name: Publish to npm
       run: npm publish
