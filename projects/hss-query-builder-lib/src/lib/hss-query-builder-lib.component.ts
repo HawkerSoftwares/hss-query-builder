@@ -507,7 +507,7 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
 
   coerceValueForOperator(operator: string, value: any, rule: Rule): any {
     const inputType: string = this.getInputType(rule.field, operator);
-    if (inputType === 'multiselect' && !Array.isArray(value)) {
+    if (inputType === 'multiselect' && !Array.isArray(value) && value) {
       return [value];
     }
     return value;
