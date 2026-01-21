@@ -1,24 +1,219 @@
-<div style="padding: 20px; font-family: Arial, sans-serif;">
-  <h1>HSS Query Builder - Angular 21 Test</h1>
-  
-  <div style="margin-top: 20px; padding: 20px; border: 1px solid #ccc; border-radius: 4px;">
-    <h2>Query Builder Component</h2>
-    <hss-query-builder 
-      [(ngModel)]="query" 
-      [config]="config"
-      [allowRuleset]="true"
-      [allowCollapse]="true">
-    </hss-query-builder>
+<div class="demo-container">
+  <div class="header-section">
+    <h1>HSS Query Builder</h1>
+    <p class="subtitle">Angular 21 with Material Design & Signals</p>
   </div>
 
-  <div style="margin-top: 40px; padding: 20px; background-color: #f5f5f5; border-radius: 4px;">
-    <h3>Current Query Value:</h3>
-    <pre style="background: white; padding: 10px; border: 1px solid #ccc;">{{ query | json }}</pre>
-  </div>
+  <!-- Material Design Example -->
+  <section class="demo-section">
+    <h2 class="section-title">🎨 Material Design Example</h2>
+    <mat-card class="query-card">
+      <mat-card-content>
+        <hss-query-builder [(ngModel)]="queryMaterial" (ngModelChange)="onMaterialQueryChange()" [config]="config"
+          [allowRuleset]="allowRuleset" [allowCollapse]="allowCollapse"
+          [persistValueOnFieldChange]="persistValueOnFieldChange">
 
-  <div style="margin-top: 20px; padding: 20px; background-color: #e8f5e9; border-radius: 4px;">
-    <h3>✅ Application is Running</h3>
-    <p>Angular version: 21.0.0</p>
-    <p>Query Builder Library: Successfully imported and working</p>
-  </div>
+          <!-- Custom Button Group with Material Icons -->
+          <ng-container
+            *queryButtonGroup="let ruleset; let addRule=addRule; let addRuleSet=addRuleSet; let removeRuleSet=removeRuleSet">
+            <button type="button" mat-icon-button color="primary" (click)="addRule()" matTooltip="Add Rule">
+              <mat-icon>add</mat-icon>
+            </button>
+            @if (addRuleSet) {
+            <button type="button" mat-icon-button color="primary" (click)="addRuleSet()" matTooltip="Add Rule Set">
+              <mat-icon>add_circle_outline</mat-icon>
+            </button>
+            }
+            @if (removeRuleSet) {
+            <button type="button" mat-icon-button color="warn" (click)="removeRuleSet()" matTooltip="Remove Rule Set">
+              <mat-icon>delete</mat-icon>
+            </button>
+            }
+          </ng-container>
+
+          <!-- Custom Arrow Icon -->
+          <ng-container *queryArrowIcon>
+            <mat-icon class="mat-arrow-icon">chevron_right</mat-icon>
+          </ng-container>
+
+          <!-- Custom Remove Button -->
+          <ng-container *queryRemoveButton="let rule; let removeRule=removeRule">
+            <button type="button" mat-icon-button color="warn" (click)="removeRule(rule)" matTooltip="Remove Rule">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </ng-container>
+
+          <!-- Custom Switch Group (AND/OR) -->
+          <ng-container *querySwitchGroup="let ruleset; let onChange=onChange">
+            @if (ruleset) {
+            <mat-radio-group [(ngModel)]="ruleset.condition" (ngModelChange)="onChange($event)" class="condition-group">
+              <mat-radio-button value="and" class="condition-radio">AND</mat-radio-button>
+              <mat-radio-button value="or" class="condition-radio">OR</mat-radio-button>
+            </mat-radio-group>
+            }
+          </ng-container>
+
+          <!-- Custom Entity Selector -->
+          <ng-container *queryEntity="let rule; let entities=entities; let onChange=onChange">
+            <mat-form-field appearance="outline" class="field-control">
+              <mat-label>Entity</mat-label>
+              <mat-select [(ngModel)]="rule.entity" (ngModelChange)="onChange($event, rule)">
+                @for (entity of entities; track entity.value) {
+                <mat-option [value]="entity.value">
+                  {{entity.name}}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </ng-container>
+
+          <!-- Custom Field Selector -->
+          <ng-container *queryField="let rule; let fields=fields; let onChange=onChange; let getFields=getFields">
+            <mat-form-field appearance="outline" class="field-control">
+              <mat-label>Field</mat-label>
+              <mat-select [(ngModel)]="rule.field" (ngModelChange)="onChange($event, rule)">
+                @for (field of getFields(rule.entity); track field.value) {
+                <mat-option [value]="field.value">
+                  {{ field.name }}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </ng-container>
+
+          <!-- Custom Operator Selector -->
+          <ng-container *queryOperator="let rule; let operators=operators; let onChange=onChange">
+            <mat-form-field appearance="outline" class="operator-control">
+              <mat-label>Operator</mat-label>
+              <mat-select [(ngModel)]="rule.operator" (ngModelChange)="onChange(rule)">
+                @for (value of operators; track value) {
+                <mat-option [value]="value">
+                  {{ value }}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </ng-container>
+
+          <!-- Boolean Input -->
+          <ng-container *queryInput="let rule; type: 'boolean'; let onChange=onChange">
+            <mat-checkbox [(ngModel)]="rule.value" (ngModelChange)="onChange()" class="value-checkbox"></mat-checkbox>
+          </ng-container>
+
+          <!-- Category Input -->
+          <ng-container
+            *queryInput="let rule; let field=field; let options=options; type: 'category'; let onChange=onChange">
+            <mat-form-field appearance="outline" class="value-control">
+              <mat-label>Value</mat-label>
+              <mat-select [(ngModel)]="rule.value" (ngModelChange)="onChange()">
+                @for (opt of options; track opt.value) {
+                <mat-option [value]="opt.value">
+                  {{ opt.name }}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </ng-container>
+
+          <!-- Date Input -->
+          <ng-container *queryInput="let rule; type: 'date'; let onChange=onChange">
+            <mat-form-field appearance="outline" class="value-control">
+              <mat-label>Date</mat-label>
+              <input matInput [matDatepicker]="picker" [(ngModel)]="rule.value" (ngModelChange)="onChange()">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </ng-container>
+
+          <!-- Multiselect Input -->
+          <ng-container *queryInput="let rule; let options=options; type: 'multiselect'; let onChange=onChange">
+            <mat-form-field appearance="outline" class="value-control-wide">
+              <mat-label>Select Multiple</mat-label>
+              <mat-select [(ngModel)]="rule.value" multiple (ngModelChange)="onChange()">
+                @for (opt of options; track opt.value) {
+                <mat-option [value]="opt.value">
+                  {{ opt.name }}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </ng-container>
+
+          <!-- Number Input -->
+          <ng-container *queryInput="let rule; let field=field; type: 'number'; let onChange=onChange">
+            <mat-form-field appearance="outline" class="value-control-small">
+              <mat-label>Number</mat-label>
+              <input matInput [(ngModel)]="rule.value" type="number" (ngModelChange)="onChange()">
+            </mat-form-field>
+          </ng-container>
+
+          <!-- String Input -->
+          <ng-container *queryInput="let rule; let field=field; type: 'string'; let onChange=onChange">
+            <mat-form-field appearance="outline" class="value-control">
+              <mat-label>Value</mat-label>
+              <input matInput [(ngModel)]="rule.value" (ngModelChange)="onChange()">
+            </mat-form-field>
+          </ng-container>
+
+          <!-- Textarea Input -->
+          <ng-container *queryInput="let rule; let field=field; type: 'textarea'; let onChange=onChange">
+            <mat-form-field appearance="outline" class="value-control-wide">
+              <mat-label>Notes</mat-label>
+              <textarea matInput [(ngModel)]="rule.value" (ngModelChange)="onChange()" rows="3"></textarea>
+            </mat-form-field>
+          </ng-container>
+
+        </hss-query-builder>
+      </mat-card-content>
+    </mat-card>
+  </section>
+
+  <!-- Bootstrap Example (with proper Bootstrap CSS) -->
+  <section class="demo-section">
+    <h2 class="section-title">🎯 Bootstrap Styled</h2>
+    <div class="bootstrap-container">
+      <hss-query-builder [(ngModel)]="queryBootstrap" (ngModelChange)="onBootstrapQueryChange()"
+        [classNames]="bootstrapClassNames" [config]="config" [allowRuleset]="allowRuleset"
+        [allowCollapse]="allowCollapse" [persistValueOnFieldChange]="persistValueOnFieldChange">
+
+        <!-- Custom Textarea for Bootstrap -->
+        <div class="col-auto" *queryInput="let rule; type: 'textarea'; let onChange=onChange">
+          <textarea class="form-control" [(ngModel)]="rule.value" (ngModelChange)="onChange()"
+            placeholder="Custom Textarea" rows="3"></textarea>
+        </div>
+      </hss-query-builder>
+    </div>
+  </section>
+
+  <!-- Query Output -->
+  <section class="demo-section">
+    <mat-card class="output-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon class="title-icon">code</mat-icon>
+          Current Query Value
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <pre class="query-output">{{ queryMaterial | json }}</pre>
+      </mat-card-content>
+    </mat-card>
+  </section>
+
+  <!-- Status Info -->
+  <section class="demo-section">
+    <mat-card class="status-card">
+      <mat-card-content>
+        <div class="status-content">
+          <mat-icon class="status-icon">check_circle</mat-icon>
+          <div class="status-text">
+            <h3>Application Status</h3>
+            <p><strong>Angular:</strong> 21.0.0 with Signals & Modern Control Flow</p>
+            <p><strong>Material Design:</strong> Fully integrated with custom theme</p>
+            <p><strong>Query Builder:</strong> Production ready with best practices</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </section>
 </div>
