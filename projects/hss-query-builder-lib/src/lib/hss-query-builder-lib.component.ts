@@ -43,7 +43,7 @@ import {
   ElementRef
 } from '@angular/core';
 import { 
-  QueryInputDirective,
+    QueryInputDirective,
     QueryOperatorDirective,
     QueryFieldDirective,
     QueryEntityDirective,
@@ -57,17 +57,17 @@ import {
 import { CommonModule } from '@angular/common';
 
 
-export const CONTROL_VALUE_ACCESSOR: any = {
+export const CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => HssQueryBuilderLibComponent),
   multi: true
-};
+} as const;
 
-export const VALIDATOR: any = {
+export const VALIDATOR = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => HssQueryBuilderLibComponent),
   multi: true
-};
+} as const;
 
 @Component({
   selector: 'hss-query-builder',
@@ -128,8 +128,8 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
   @Input() data: RuleSet = { condition: 'and', rules: [] };
 
   // For ControlValueAccessor interface
-  public onChangeCallback!: () => void;
-  public onTouchedCallback!: () => any;
+  public onChangeCallback: ((value: RuleSet) => void) | null = null;
+  public onTouchedCallback: (() => void) | null = null;
 
   @Input() allowRuleset: boolean = true;
   @Input() allowCollapse: boolean = false;
@@ -163,11 +163,9 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
   @ContentChildren(QueryInputDirective) inputTemplates!: QueryList<QueryInputDirective>;
   @ContentChild(QueryArrowIconDirective) arrowIconTemplate!: QueryArrowIconDirective;
 
-  private defaultTemplateTypes: string[] = [
-    'string', 'number', 'time', 'date', 'category', 'boolean', 'multiselect'];
-  private defaultPersistValueTypes: string[] = [
-    'string', 'number', 'time', 'date', 'boolean'];
-  private defaultEmptyList: any[] = [];
+  private readonly defaultTemplateTypes: string[] = ['string', 'number', 'time', 'date', 'category', 'boolean', 'multiselect'];
+  private readonly defaultPersistValueTypes: string[] = ['string', 'number', 'time', 'date', 'boolean'];
+  private readonly defaultEmptyList: any[] = [];
   private operatorsCache!: { [key: string]: string[] };
   private inputContextCache = new Map<Rule, InputContext>();
   private operatorContextCache = new Map<Rule, OperatorContext>();
@@ -211,22 +209,20 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
   // ----------Validator Implementation----------
 
   validate(control: AbstractControl): ValidationErrors | null {
-    const errors: { [key: string]: any } = {};
-    const ruleErrorStore: any = [];
-    let hasErrors = false;
+    const errors: ValidationErrors = {};
+    const ruleErrorStore: any[] = [];
 
     if (!this.config.allowEmptyRulesets && this.checkEmptyRuleInRuleset(this.data)) {
-      errors['empty'] = 'Empty rulesets are not allowed.';
-      hasErrors = true;
+      errors['empty'] = this.emptyMessage;
     }
 
     this.validateRulesInRuleset(this.data, ruleErrorStore);
 
-    if (ruleErrorStore.length) {
+    if (ruleErrorStore.length > 0) {
       errors['rules'] = ruleErrorStore;
-      hasErrors = true;
     }
-    return hasErrors ? errors : null;
+    
+    return Object.keys(errors).length > 0 ? errors : null;
   }
 
   // ----------ControlValueAccessor Implementation----------
@@ -241,14 +237,14 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
     this.handleDataChange();
   }
 
-  writeValue(obj: any): void {
-    this.value = obj;
+  writeValue(obj: RuleSet | null): void {
+    this.value = obj || { condition: 'and', rules: [] };
   }
-  registerOnChange(fn: any): void {
+  registerOnChange(fn: (value: RuleSet) => void): void {
     this.onChangeCallback = () => fn(this.data);
   }
-  registerOnTouched(fn: any): void {
-    this.onTouchedCallback = () => fn(this.data);
+  registerOnTouched(fn: () => void): void {
+    this.onTouchedCallback = fn;
   }
   setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
@@ -257,7 +253,7 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
 
   // ----------END----------
 
-  getDisabledState = (): boolean => {
+  getDisabledState(): boolean {
     return this.disabled;
   }
 
@@ -809,19 +805,13 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
   private handleDataChange(): void {
     this.changeDetectorRef.markForCheck();
     if (this.onChangeCallback) {
-      this.onChangeCallback();
+      this.onChangeCallback(this.data);
     }
-    if (this.parentChangeCallback) {
-      this.parentChangeCallback();
-    }
+    this.parentChangeCallback?.();
   }
 
   private handleTouched(): void {
-    if (this.onTouchedCallback) {
-      this.onTouchedCallback();
-    }
-    if (this.parentTouchedCallback) {
-      this.parentTouchedCallback();
-    }
+    this.onTouchedCallback?.();
+    this.parentTouchedCallback?.();
   }
 }
