@@ -69,6 +69,7 @@ export const VALIDATOR: any = {
   selector: 'hss-query-builder',
   templateUrl: './hss-query-builder-lib.component.html',
   styleUrls: ['./hss-query-builder-lib.component.scss'],
+  standalone: false,
   providers: [CONTROL_VALUE_ACCESSOR, VALIDATOR]
 })
 export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlValueAccessor, Validator {
