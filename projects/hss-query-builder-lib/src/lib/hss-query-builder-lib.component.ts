@@ -4,7 +4,9 @@ import {
   NG_VALUE_ACCESSOR,
   NG_VALIDATORS,
   ValidationErrors,
-  Validator
+  Validator,
+  FormsModule,
+  ReactiveFormsModule
 } from '@angular/forms';
 import {
   ButtonGroupContext,
@@ -28,53 +30,132 @@ import {
 import {
   ChangeDetectorRef,
   Component,
-  ContentChild,
-  ContentChildren,
-  forwardRef,
-  Input,
-  OnChanges,
-  OnInit,
-  QueryList,
-  SimpleChanges,
-  TemplateRef,
+  ElementRef,
   ViewChild,
-  ElementRef
+  ChangeDetectionStrategy,
+  forwardRef,
+  inject,
+  input,
+  model,
+  computed,
+  effect,
+  signal,
+  contentChild,
+  contentChildren,
+  Input,
+  TemplateRef,
+  QueryList,
+  viewChild
 } from '@angular/core';
-import { 
+import {
   QueryInputDirective,
-    QueryOperatorDirective,
-    QueryFieldDirective,
-    QueryEntityDirective,
-    QueryButtonGroupDirective,
-    QuerySwitchGroupDirective,
-    QueryRemoveButtonDirective,
-    QueryEmptyWarningDirective,
-    QueryArrowIconDirective
+  QueryOperatorDirective,
+  QueryFieldDirective,
+  QueryEntityDirective,
+  QueryButtonGroupDirective,
+  QuerySwitchGroupDirective,
+  QueryRemoveButtonDirective,
+  QueryEmptyWarningDirective,
+  QueryArrowIconDirective,
+  QUERY_BUILDER_COMPONENTS
 } from './components';
+import { CommonModule } from '@angular/common';
 
-
-export const CONTROL_VALUE_ACCESSOR: any = {
+export const CONTROL_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
   useExisting: forwardRef(() => HssQueryBuilderLibComponent),
   multi: true
-};
+} as const;
 
-export const VALIDATOR: any = {
+export const VALIDATOR = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => HssQueryBuilderLibComponent),
   multi: true
-};
+} as const;
 
 @Component({
   selector: 'hss-query-builder',
   templateUrl: './hss-query-builder-lib.component.html',
   styleUrls: ['./hss-query-builder-lib.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    QUERY_BUILDER_COMPONENTS
+  ],
   providers: [CONTROL_VALUE_ACCESSOR, VALIDATOR]
 })
-export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlValueAccessor, Validator {
-  public fields!: Field[];
-  public filterFields!: Field[];
-  public entities!: Entity[] | null;
+export class HssQueryBuilderLibComponent implements ControlValueAccessor, Validator {
+  // Signals
+  public disabled = input(false);
+
+  // Internal disable state for CVA
+  private _disabledCVA = signal(false);
+  public isDisabled = computed(() => this.disabled() || this._disabledCVA());
+
+  public data = model<RuleSet>({ condition: 'and', rules: [] });
+  public allowRuleset = input(true);
+  public allowCollapse = input(false);
+  public emptyMessage = input('A ruleset cannot be empty. Please add a rule or remove it all together.');
+  public classNames = input<QueryBuilderClassNames>();
+  public operatorMap = input<{ [key: string]: string[] }>();
+  public parentValue = input<RuleSet>();
+  public config = input<QueryBuilderConfig>({ fields: {} });
+
+  public parentArrowIconTemplate = input<QueryArrowIconDirective>();
+  public parentInputTemplates = input<Array<QueryInputDirective>>(); // QueryList usually passed as array or generic iterable
+  public parentOperatorTemplate = input<QueryOperatorDirective>();
+  public parentFieldTemplate = input<QueryFieldDirective>();
+  public parentEntityTemplate = input<QueryEntityDirective>();
+  public parentSwitchGroupTemplate = input<QuerySwitchGroupDirective>();
+  public parentButtonGroupTemplate = input<QueryButtonGroupDirective>();
+  public parentRemoveButtonTemplate = input<QueryRemoveButtonDirective>();
+  public parentEmptyWarningTemplate = input<QueryEmptyWarningDirective>();
+
+  public parentChangeCallback = input<() => void>();
+  public parentTouchedCallback = input<() => void>();
+  public persistValueOnFieldChange = input(false);
+
+  // Content Queries using Signals
+  buttonGroupTemplate = contentChild(QueryButtonGroupDirective);
+  switchGroupTemplate = contentChild(QuerySwitchGroupDirective);
+  fieldTemplate = contentChild(QueryFieldDirective);
+  entityTemplate = contentChild(QueryEntityDirective);
+  operatorTemplate = contentChild(QueryOperatorDirective);
+  removeButtonTemplate = contentChild(QueryRemoveButtonDirective);
+  emptyWarningTemplate = contentChild(QueryEmptyWarningDirective);
+  arrowIconTemplate = contentChild(QueryArrowIconDirective);
+  inputTemplates = contentChildren(QueryInputDirective);
+
+  // Signal-based ViewChild
+  treeContainer = viewChild<ElementRef>('treeContainer');
+
+  // Derived State
+  public fields = computed(() => {
+    const config = this.config();
+    if (typeof config === 'object' && config.fields) {
+      return Object.keys(config.fields).map((value) => {
+        const field = config.fields[value];
+        field.value = field.value || value;
+        return field;
+      });
+    }
+    return [];
+  });
+
+  public entities = computed(() => {
+    const config = this.config();
+    if (typeof config === 'object' && config.entities) {
+      return Object.keys(config.entities).map((value) => {
+        const entity = (config.entities || {})[value];
+        entity.value = entity.value || value;
+        return entity;
+      });
+    }
+    return null;
+  });
+
   public defaultClassNames: QueryBuilderClassNames = {
     arrowIconButton: 'q-arrow-icon-button',
     arrowIcon: 'q-icon q-arrow-icon',
@@ -114,141 +195,84 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
     category: ['=', '!=', 'in', 'not in'],
     boolean: ['=']
   };
-  @Input() disabled: boolean = false;
-  @Input() data: RuleSet = { condition: 'and', rules: [] };
 
-  // For ControlValueAccessor interface
-  public onChangeCallback!: () => void;
-  public onTouchedCallback!: () => any;
+  public onChangeCallback: ((value: RuleSet) => void) | null = null;
+  public onTouchedCallback: (() => void) | null = null;
 
-  @Input() allowRuleset: boolean = true;
-  @Input() allowCollapse: boolean = false;
-  @Input() emptyMessage: string = 'A ruleset cannot be empty. Please add a rule or remove it all together.';
-  @Input() classNames!: QueryBuilderClassNames;
-  @Input() operatorMap!: { [key: string]: string[] };
-  @Input() parentValue!: RuleSet;
-  @Input() config: QueryBuilderConfig = { fields: {} };
-  @Input() parentArrowIconTemplate!: QueryArrowIconDirective;
-  @Input() parentInputTemplates!: QueryList<QueryInputDirective>;
-  @Input() parentOperatorTemplate!: QueryOperatorDirective;
-  @Input() parentFieldTemplate!: QueryFieldDirective;
-  @Input() parentEntityTemplate!: QueryEntityDirective;
-  @Input() parentSwitchGroupTemplate!: QuerySwitchGroupDirective;
-  @Input() parentButtonGroupTemplate!: QueryButtonGroupDirective;
-  @Input() parentRemoveButtonTemplate!: QueryRemoveButtonDirective;
-  @Input() parentEmptyWarningTemplate!: QueryEmptyWarningDirective;
-  @Input() parentChangeCallback!: () => void;
-  @Input() parentTouchedCallback!: () => void;
-  @Input() persistValueOnFieldChange: boolean = false;
+  private readonly defaultTemplateTypes: string[] = ['string', 'number', 'time', 'date', 'category', 'boolean', 'multiselect'];
+  private readonly defaultPersistValueTypes: string[] = ['string', 'number', 'time', 'date', 'boolean'];
+  private readonly defaultEmptyList: any[] = [];
 
-  @ViewChild('treeContainer', {static: true}) treeContainer!: ElementRef;
+  private operatorsCache: { [key: string]: string[] } = {};
 
-  @ContentChild(QueryButtonGroupDirective) buttonGroupTemplate!: QueryButtonGroupDirective;
-  @ContentChild(QuerySwitchGroupDirective) switchGroupTemplate!: QuerySwitchGroupDirective;
-  @ContentChild(QueryFieldDirective) fieldTemplate!: QueryFieldDirective;
-  @ContentChild(QueryEntityDirective) entityTemplate!: QueryEntityDirective;
-  @ContentChild(QueryOperatorDirective) operatorTemplate!: QueryOperatorDirective;
-  @ContentChild(QueryRemoveButtonDirective) removeButtonTemplate!: QueryRemoveButtonDirective;
-  @ContentChild(QueryEmptyWarningDirective) emptyWarningTemplate!: QueryEmptyWarningDirective;
-  @ContentChildren(QueryInputDirective) inputTemplates!: QueryList<QueryInputDirective>;
-  @ContentChild(QueryArrowIconDirective) arrowIconTemplate!: QueryArrowIconDirective;
-
-  private defaultTemplateTypes: string[] = [
-    'string', 'number', 'time', 'date', 'category', 'boolean', 'multiselect'];
-  private defaultPersistValueTypes: string[] = [
-    'string', 'number', 'time', 'date', 'boolean'];
-  private defaultEmptyList: any[] = [];
-  private operatorsCache!: { [key: string]: string[] };
-  private inputContextCache = new Map<Rule, InputContext>();
-  private operatorContextCache = new Map<Rule, OperatorContext>();
-  private fieldContextCache = new Map<Rule, FieldContext>();
-  private entityContextCache = new Map<Rule, EntityContext>();
-  private removeButtonContextCache = new Map<Rule, RemoveButtonContext>();
+  // Use WeakMap for better memory optimization with objects
+  private inputContextCache = new WeakMap<Rule, InputContext>();
+  private operatorContextCache = new WeakMap<Rule, OperatorContext>();
+  private fieldContextCache = new WeakMap<Rule, FieldContext>();
+  private entityContextCache = new WeakMap<Rule, EntityContext>();
+  private removeButtonContextCache = new WeakMap<Rule, RemoveButtonContext>();
   private buttonGroupContext!: ButtonGroupContext;
 
-  constructor(private changeDetectorRef: ChangeDetectorRef) { }
+  private changeDetectorRef = inject(ChangeDetectorRef);
 
-  // ----------OnInit Implementation----------
-
-  ngOnInit() { }
-
-  // ----------OnChanges Implementation----------
-
-  ngOnChanges(changes: SimpleChanges) {
-    const config = this.config;
-    const type = typeof config;
-    if (type === 'object') {
-      this.fields = Object.keys(config.fields).map((value) => {
-        const field = config.fields[value];
-        field.value = field.value || value;
-        return field;
-      });
-      if (config.entities) {
-        this.entities = Object.keys(config.entities).map((value) => {
-          const entity = (config.entities || {})[value];
-          entity.value = entity.value || value;
-          return entity;
-        });
-      } else {
-        this.entities = null;
-      }
+  constructor() {
+    // Effect to clear cache when config changes
+    effect(() => {
+      this.config();
       this.operatorsCache = {};
-    } else {
-      throw new Error(`Expected 'config' must be a valid object, got ${type} instead.`);
-    }
+    });
   }
 
   // ----------Validator Implementation----------
 
   validate(control: AbstractControl): ValidationErrors | null {
-    const errors: { [key: string]: any } = {};
-    const ruleErrorStore: any = [];
-    let hasErrors = false;
+    const errors: ValidationErrors = {};
+    const ruleErrorStore: any[] = [];
+    const config = this.config();
+    const data = this.data();
 
-    if (!this.config.allowEmptyRulesets && this.checkEmptyRuleInRuleset(this.data)) {
-      errors['empty'] = 'Empty rulesets are not allowed.';
-      hasErrors = true;
+    if (!config.allowEmptyRulesets && this.checkEmptyRuleInRuleset(data)) {
+      errors['empty'] = this.emptyMessage();
     }
 
-    this.validateRulesInRuleset(this.data, ruleErrorStore);
+    this.validateRulesInRuleset(data, ruleErrorStore);
 
-    if (ruleErrorStore.length) {
+    if (ruleErrorStore.length > 0) {
       errors['rules'] = ruleErrorStore;
-      hasErrors = true;
     }
-    return hasErrors ? errors : null;
+
+    return Object.keys(errors).length > 0 ? errors : null;
   }
 
   // ----------ControlValueAccessor Implementation----------
 
   @Input()
   get value(): RuleSet {
-    return this.data;
+    return this.data();
   }
   set value(value: RuleSet) {
-    // When component is initialized without a formControl, null is passed to value
-    this.data = value || { condition: 'and', rules: [] };
+    this.data.set(value || { condition: 'and', rules: [] });
     this.handleDataChange();
   }
 
-  writeValue(obj: any): void {
-    this.value = obj;
+  writeValue(obj: RuleSet | null): void {
+    this.data.set(obj || { condition: 'and', rules: [] });
   }
-  registerOnChange(fn: any): void {
-    this.onChangeCallback = () => fn(this.data);
+  registerOnChange(fn: (value: RuleSet) => void): void {
+    this.onChangeCallback = () => fn(this.data());
   }
-  registerOnTouched(fn: any): void {
-    this.onTouchedCallback = () => fn(this.data);
+  registerOnTouched(fn: () => void): void {
+    this.onTouchedCallback = fn;
   }
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
-    this.changeDetectorRef.detectChanges();
+    this._disabledCVA.set(isDisabled);
+    this.changeDetectorRef.markForCheck();
   }
 
-  // ----------END----------
+  // ----------Methods----------
 
   getDisabledState = (): boolean => {
-    return this.disabled;
+    return this.isDisabled();
   }
 
   findTemplateForRule(rule: Rule): any {
@@ -266,10 +290,9 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
     }
   }
 
-  findQueryInput(type: string): QueryInputDirective {
-    let templates: any = this.parentInputTemplates || this.inputTemplates;
-    templates = templates.find((item: QueryInputDirective) => item.queryInputType === type);
-    return templates;
+  findQueryInput(type: string): QueryInputDirective | undefined {
+    const templates = this.parentInputTemplates() || this.inputTemplates();
+    return (templates as any).find((item: QueryInputDirective) => item.queryInputType === type);
   }
 
   getOperators(field: string): string[] {
@@ -277,10 +300,11 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
       return this.operatorsCache[field];
     }
     let operators = this.defaultEmptyList;
-    const fieldObject = this.config.fields[field];
+    const config = this.config();
+    const fieldObject = config.fields[field];
 
-    if (this.config.getOperators) {
-      return this.config.getOperators(field, fieldObject);
+    if (config.getOperators && fieldObject) {
+      return config.getOperators(field, fieldObject);
     }
 
     const type = fieldObject.type;
@@ -288,7 +312,8 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
     if (fieldObject && fieldObject.operators) {
       operators = fieldObject.operators;
     } else if (type) {
-      operators = (this.operatorMap && this.operatorMap[type]) || this.defaultOperatorMap[type] || this.defaultEmptyList;
+      const operatorMap = this.operatorMap() || this.defaultOperatorMap;
+      operators = (operatorMap && operatorMap[type]) || this.defaultEmptyList;
       if (operators.length === 0) {
         console.warn(
           `No operators found for field '${field}' with type ${fieldObject.type}. ` +
@@ -301,31 +326,33 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
       console.warn(`No 'type' property found on field: '${field}'`);
     }
 
-    // Cache reference to array object, so it won't be computed next time and trigger a rerender.
     this.operatorsCache[field] = operators;
     return operators;
   }
 
   getFields(entity: string): Field[] {
-    if (this.entities && entity) {
-      return this.fields.filter((field) => {
+    const entities = this.entities();
+    const fields = this.fields();
+    if (entities && entity) {
+      return fields.filter((field) => {
         return field && field.entity === entity;
       });
     } else {
-      return this.fields;
+      return fields;
     }
   }
 
   getInputType(field: string, operator: string): string {
-    if (this.config.getInputType) {
-      return this.config.getInputType(field, operator);
+    const config = this.config();
+    if (config.getInputType) {
+      return config.getInputType(field, operator);
     }
 
-    if (!this.config.fields[field]) {
+    if (!config.fields[field]) {
       throw new Error(`No configuration for field '${field}' could be found! Please add it to config.fields.`);
     }
 
-    const type = this.config.fields[field].type;
+    const type = config.fields[field].type;
     switch (operator) {
       case 'is null':
       case 'is not null':
@@ -339,15 +366,16 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
   }
 
   getOptions(field: string): Option[] {
-    if (this.config.getOptions) {
-      return this.config.getOptions(field);
+    const config = this.config();
+    if (config.getOptions) {
+      return config.getOptions(field);
     }
-    return this.config.fields[field].options || this.defaultEmptyList;
+    return config.fields[field].options || this.defaultEmptyList;
   }
 
   getClassNames(...args: string[]): string {
     const defaultClassNames: any = this.defaultClassNames;
-    const clsLookup: any = this.classNames ? this.classNames : defaultClassNames;
+    const clsLookup: any = this.classNames() ? this.classNames()! : defaultClassNames;
     const classNames = args.map((id: string) => clsLookup[id] || defaultClassNames[id]).filter((c) => !!c);
     return classNames.length ? classNames.join(' ') : '';
   }
@@ -358,7 +386,7 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
     } else if (entity.defaultField !== undefined) {
       return this.getDefaultValue(entity.defaultField);
     } else {
-      const entityFields = this.fields.filter((field) => {
+      const entityFields = this.fields().filter((field) => {
         return field && field.entity === entity.value;
       });
       if (entityFields && entityFields.length) {
@@ -387,15 +415,16 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
   }
 
   addRule(parent?: RuleSet): void {
-    if (this.disabled) {
+    if (this.isDisabled()) {
       return;
     }
 
-    parent = parent || this.data;
-    if (this.config.addRule) {
-      this.config.addRule(parent);
+    const config = this.config();
+    parent = parent || this.data();
+    if (config.addRule) {
+      config.addRule(parent);
     } else {
-      const field = this.fields[0];
+      const field = this.fields()[0];
       parent.rules = parent.rules.concat([{
         field: field.value || '',
         operator: this.getDefaultOperator(field),
@@ -409,16 +438,19 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
   }
 
   removeRule(rule: Rule, parent?: RuleSet): void {
-    if (this.disabled) {
+    if (this.isDisabled()) {
       return;
     }
 
-    parent = parent || this.data;
-    if (this.config.removeRule) {
-      this.config.removeRule(rule, parent);
+    const config = this.config();
+    parent = parent || this.data();
+    if (config.removeRule) {
+      config.removeRule(rule, parent);
     } else {
       parent.rules = parent.rules.filter((r) => r !== rule);
     }
+
+    // Clear caches
     this.inputContextCache.delete(rule);
     this.operatorContextCache.delete(rule);
     this.fieldContextCache.delete(rule);
@@ -430,13 +462,14 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
   }
 
   addRuleSet(parent?: RuleSet): void {
-    if (this.disabled) {
+    if (this.isDisabled()) {
       return;
     }
 
-    parent = parent || this.data;
-    if (this.config.addRuleSet) {
-      this.config.addRuleSet(parent);
+    const config = this.config();
+    parent = parent || this.data();
+    if (config.addRuleSet) {
+      config.addRuleSet(parent);
     } else {
       parent.rules = parent.rules.concat([{ condition: 'and', rules: [] }]);
     }
@@ -446,15 +479,16 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
   }
 
   removeRuleSet(ruleset?: RuleSet, parent?: RuleSet): void {
-    if (this.disabled) {
+    if (this.isDisabled()) {
       return;
     }
 
-    ruleset = ruleset || this.data;
-    parent = parent || this.parentValue;
-    if (this.config.removeRuleSet) {
-      this.config.removeRuleSet(ruleset, parent);
-    } else {
+    const config = this.config();
+    ruleset = ruleset || this.data();
+    parent = parent || this.parentValue();
+    if (config.removeRuleSet && parent) {
+      config.removeRuleSet(ruleset, parent);
+    } else if (parent) {
       parent.rules = parent.rules.filter((r) => r !== ruleset);
     }
 
@@ -463,40 +497,50 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
   }
 
   transitionEnd(e: Event): void {
-    this.treeContainer.nativeElement.style.maxHeight = null;
+    const treeContainer = this.treeContainer();
+    if (treeContainer && treeContainer.nativeElement) {
+      treeContainer.nativeElement.style.maxHeight = null;
+    }
   }
 
   toggleCollapse(): void {
     this.computedTreeContainerHeight();
     setTimeout(() => {
-      this.data.collapsed = !this.data.collapsed;
+      const data = this.data();
+      data.collapsed = !data.collapsed;
+      // Mutating data in place, triggering change detection due to OnPush
+      this.changeDetectorRef.markForCheck();
     }, 100);
   }
 
   computedTreeContainerHeight(): void {
-    const nativeElement: HTMLElement = this.treeContainer.nativeElement;
-    if (nativeElement && nativeElement.firstElementChild) {
-      nativeElement.style.maxHeight = (nativeElement.firstElementChild.clientHeight + 8) + 'px';
+    const treeContainer = this.treeContainer();
+    if (treeContainer) {
+      const nativeElement: HTMLElement = treeContainer.nativeElement;
+      if (nativeElement && nativeElement.firstElementChild) {
+        nativeElement.style.maxHeight = (nativeElement.firstElementChild.clientHeight + 8) + 'px';
+      }
     }
   }
 
   changeCondition(value: string): void {
-    if (this.disabled) {
+    if (this.isDisabled()) {
       return;
     }
 
-    this.data.condition = value;
+    this.data().condition = value;
     this.handleTouched();
     this.handleDataChange();
   }
 
   changeOperator(rule: Rule): void {
-    if (this.disabled) {
+    if (this.isDisabled()) {
       return;
     }
 
-    if (this.config.coerceValueForOperator) {
-      rule.value = this.config.coerceValueForOperator(rule.operator || '', rule.value, rule);
+    const config = this.config();
+    if (config.coerceValueForOperator) {
+      rule.value = config.coerceValueForOperator(rule.operator || '', rule.value, rule);
     } else {
       rule.value = this.coerceValueForOperator(rule.operator || '', rule.value, rule);
     }
@@ -514,7 +558,7 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
   }
 
   changeInput(): void {
-    if (this.disabled) {
+    if (this.isDisabled()) {
       return;
     }
 
@@ -523,14 +567,15 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
   }
 
   changeField(fieldValue: string, rule: Rule): void {
-    if (this.disabled) {
+    if (this.isDisabled()) {
       return;
     }
 
     const inputContext = this.inputContextCache.get(rule);
     const currentField: any = inputContext && inputContext.field;
 
-    const nextField: Field = this.config.fields[fieldValue];
+    const config = this.config();
+    const nextField: Field = config.fields[fieldValue];
 
     const nextValue = this.calculateFieldChangeValue(
       currentField, nextField, rule.value);
@@ -558,24 +603,26 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
   }
 
   changeEntity(entityValue: string, rule: Rule, index: number, data: RuleSet): void {
-    if (this.disabled) {
+    if (this.isDisabled()) {
       return;
     }
     let i = index;
     let rs = data;
-    const entity: Entity = (this.entities || []).find((e) => e.value === entityValue);
-    const defaultField: Field = this.getDefaultField(entity);
-    if (!rs) {
-      rs = this.data;
-      i = rs.rules.findIndex((x) => x === rule);
-    }
-    rule.field = defaultField.value;
-    rs.rules[i] = rule;
-    if (defaultField) {
-      this.changeField(defaultField.value, rule);
-    } else {
-      this.handleTouched();
-      this.handleDataChange();
+    const entity = (this.entities() || []).find((e) => e.value === entityValue);
+    if (entity) {
+      const defaultField = this.getDefaultField(entity);
+      if (!rs) {
+        rs = this.data();
+        i = rs.rules.findIndex((x) => x === rule);
+      }
+      if (defaultField) {
+        rule.field = defaultField.value || '';
+        rs.rules[i] = rule;
+        this.changeField(defaultField.value || '', rule);
+      } else {
+        this.handleTouched();
+        this.handleDataChange();
+      }
     }
   }
 
@@ -588,43 +635,43 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
     }
   }
 
-  getOperatorTemplate(): TemplateRef<any> {
-    const t = this.parentOperatorTemplate || this.operatorTemplate;
+  getOperatorTemplate(): TemplateRef<any> | null {
+    const t = this.parentOperatorTemplate() || this.operatorTemplate();
     return t ? t.template : null;
   }
 
-  getFieldTemplate(): TemplateRef<any> {
-    const t = this.parentFieldTemplate || this.fieldTemplate;
+  getFieldTemplate(): TemplateRef<any> | null {
+    const t = this.parentFieldTemplate() || this.fieldTemplate();
     return t ? t.template : null;
   }
 
-  getEntityTemplate(): TemplateRef<any> {
-    const t = this.parentEntityTemplate || this.entityTemplate;
+  getEntityTemplate(): TemplateRef<any> | null {
+    const t = this.parentEntityTemplate() || this.entityTemplate();
     return t ? t.template : null;
   }
 
-  getArrowIconTemplate(): TemplateRef<any> {
-    const t = this.parentArrowIconTemplate || this.arrowIconTemplate;
+  getArrowIconTemplate(): TemplateRef<any> | null {
+    const t = this.parentArrowIconTemplate() || this.arrowIconTemplate();
     return t ? t.template : null;
   }
 
-  getButtonGroupTemplate(): TemplateRef<any> {
-    const t = this.parentButtonGroupTemplate || this.buttonGroupTemplate;
+  getButtonGroupTemplate(): TemplateRef<any> | null {
+    const t = this.parentButtonGroupTemplate() || this.buttonGroupTemplate();
     return t ? t.template : null;
   }
 
-  getSwitchGroupTemplate(): TemplateRef<any> {
-    const t = this.parentSwitchGroupTemplate || this.switchGroupTemplate;
+  getSwitchGroupTemplate(): TemplateRef<any> | null {
+    const t = this.parentSwitchGroupTemplate() || this.switchGroupTemplate();
     return t ? t.template : null;
   }
 
-  getRemoveButtonTemplate(): TemplateRef<any> {
-    const t = this.parentRemoveButtonTemplate || this.removeButtonTemplate;
+  getRemoveButtonTemplate(): TemplateRef<any> | null {
+    const t = this.parentRemoveButtonTemplate() || this.removeButtonTemplate();
     return t ? t.template : null;
   }
 
-  getEmptyWarningTemplate(): TemplateRef<any> {
-    const t = this.parentEmptyWarningTemplate || this.emptyWarningTemplate;
+  getEmptyWarningTemplate(): TemplateRef<any> | null {
+    const t = this.parentEmptyWarningTemplate() || this.emptyWarningTemplate();
     return t ? t.template : null;
   }
 
@@ -641,10 +688,10 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
     if (!this.buttonGroupContext) {
       this.buttonGroupContext = {
         addRule: this.addRule.bind(this),
-        addRuleSet: this.allowRuleset && this.addRuleSet.bind(this),
-        removeRuleSet: this.allowRuleset && this.parentValue && this.removeRuleSet.bind(this),
+        addRuleSet: this.addRuleSet.bind(this),
+        removeRuleSet: this.removeRuleSet.bind(this),
         getDisabledState: this.getDisabledState,
-        $implicit: this.data
+        $implicit: this.data()
       };
     }
     return this.buttonGroupContext;
@@ -658,7 +705,7 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
         $implicit: rule
       });
     }
-    return this.removeButtonContextCache.get(rule);
+    return this.removeButtonContextCache.get(rule)!;
   }
 
   getFieldContext(rule: Rule): FieldContext {
@@ -667,11 +714,11 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
         onChange: this.changeField.bind(this),
         getFields: this.getFields.bind(this),
         getDisabledState: this.getDisabledState,
-        fields: this.fields,
+        fields: this.fields(),
         $implicit: rule
       });
     }
-    return this.fieldContextCache.get(rule);
+    return this.fieldContextCache.get(rule)!;
   }
 
   getEntityContext(rule: Rule): EntityContext {
@@ -679,33 +726,33 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
       this.entityContextCache.set(rule, {
         onChange: this.changeEntity.bind(this),
         getDisabledState: this.getDisabledState,
-        entities: this.entities,
+        entities: this.entities() || [],
         $implicit: rule
       });
     }
-    return this.entityContextCache.get(rule);
+    return this.entityContextCache.get(rule)!;
   }
 
   getSwitchGroupContext(): SwitchGroupContext {
     return {
       onChange: this.changeCondition.bind(this),
       getDisabledState: this.getDisabledState,
-      $implicit: this.data
+      $implicit: this.data()
     };
   }
 
   getArrowIconContext(): ArrowIconContext {
     return {
       getDisabledState: this.getDisabledState,
-      $implicit: this.data
+      $implicit: this.data()
     };
   }
 
   getEmptyWarningContext(): EmptyWarningContext {
     return {
       getDisabledState: this.getDisabledState,
-      message: this.emptyMessage,
-      $implicit: this.data
+      message: this.emptyMessage(),
+      $implicit: this.data()
     };
   }
 
@@ -718,7 +765,7 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
         $implicit: rule
       });
     }
-    return this.operatorContextCache.get(rule);
+    return this.operatorContextCache.get(rule)!;
   }
 
   getInputContext(rule: Rule): InputContext {
@@ -727,11 +774,11 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
         onChange: this.changeInput.bind(this),
         getDisabledState: this.getDisabledState,
         options: this.getOptions(rule.field),
-        field: this.config.fields[rule.field],
+        field: this.config().fields[rule.field],
         $implicit: rule
       });
     }
-    return this.inputContextCache.get(rule);
+    return this.inputContextCache.get(rule)!;
   }
 
   private calculateFieldChangeValue(
@@ -740,8 +787,9 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
     currentValue: any
   ): any {
 
-    if (this.config.calculateFieldChangeValue != null) {
-      return this.config.calculateFieldChangeValue(
+    const config = this.config();
+    if (config.calculateFieldChangeValue != null) {
+      return config.calculateFieldChangeValue(
         currentField, nextField, currentValue);
     }
 
@@ -753,7 +801,7 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
         && this.defaultPersistValueTypes.indexOf(currentField.type) !== -1;
     };
 
-    if (this.persistValueOnFieldChange && canKeepValue()) {
+    if (this.persistValueOnFieldChange() && canKeepValue()) {
       return currentValue;
     }
 
@@ -768,9 +816,9 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
     if (!ruleset || !ruleset.rules || ruleset.rules.length === 0) {
       return true;
     } else {
-      return ruleset.rules.some((item: RuleSet) => {
-        if (item.rules) {
-          return this.checkEmptyRuleInRuleset(item);
+      return ruleset.rules.some((item: RuleSet | Rule) => {
+        if ((item as RuleSet).rules) {
+          return this.checkEmptyRuleInRuleset(item as RuleSet);
         } else {
           return false;
         }
@@ -784,9 +832,10 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
         if ((item as RuleSet).rules) {
           return this.validateRulesInRuleset(item as RuleSet, errorStore);
         } else if ((item as Rule).field) {
-          const field = this.config.fields[(item as Rule).field];
-          if (field && field.validator && field.validator.apply) {
-            const error = field.validator(item as Rule, ruleset);
+          const config = this.config();
+          const field = config.fields[(item as Rule).field];
+          if (field && field.validator) {
+            const error = field.validator((item as Rule), ruleset);
             if (error != null) {
               errorStore.push(error);
             }
@@ -796,22 +845,25 @@ export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlVa
     }
   }
 
-  private handleDataChange(): void {
+  handleDataChange(): void {
+    const data = this.data();
     this.changeDetectorRef.markForCheck();
     if (this.onChangeCallback) {
-      this.onChangeCallback();
+      this.onChangeCallback(data);
     }
-    if (this.parentChangeCallback) {
-      this.parentChangeCallback();
+    const parentChange = this.parentChangeCallback();
+    if (parentChange) {
+      parentChange();
     }
   }
 
-  private handleTouched(): void {
+  handleTouched(): void {
     if (this.onTouchedCallback) {
       this.onTouchedCallback();
     }
-    if (this.parentTouchedCallback) {
-      this.parentTouchedCallback();
+    const parentTouched = this.parentTouchedCallback();
+    if (parentTouched) {
+      parentTouched();
     }
   }
 }

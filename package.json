@@ -1,42 +1,55 @@
 {
   "name": "hss-query-builder",
   "version": "0.0.3",
+  "description": "HSS Query Builder Library - Modern Angular Component",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-repo/hss-query-builder"
+  },
+  "keywords": ["angular", "query-builder", "rxjs"],
+  "author": "Your Name",
+  "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "start": "ng serve --open --poll 2000",
+    "build": "ng build hss-query-builder",
+    "build:lib": "ng build hss-query-builder-lib --configuration production",
+    "watch": "ng build hss-query-builder-lib --watch",
     "test": "ng test",
-    "build-package": "ng build hss-query-builder-lib"
+    "build-package": "ng build hss-query-builder-lib",
+    "lint": "ng lint",
+    "format": "prettier --write ."
   },
-  "private": true,
+  "private": false,
+  "sideEffects": false,
   "dependencies": {
-    "@angular/animations": "^16.2.0",
-    "@angular/cdk": "^16.2.0",
-    "@angular/common": "^16.2.0",
-    "@angular/compiler": "^16.2.0",
-    "@angular/core": "^16.2.0",
-    "@angular/forms": "^16.2.0",
-    "@angular/material": "^16.2.0",
-    "@angular/platform-browser": "^16.2.0",
-    "@angular/platform-browser-dynamic": "^16.2.0",
-    "@angular/router": "^16.2.0",
+    "@angular/animations": "^21.0.0",
+    "@angular/cdk": "^21.0.0",
+    "@angular/common": "^21.0.0",
+    "@angular/compiler": "^21.0.0",
+    "@angular/core": "^21.0.0",
+    "@angular/forms": "^21.0.0",
+    "@angular/material": "^21.0.0",
+    "@angular/platform-browser": "^21.0.0",
+    "@angular/platform-browser-dynamic": "^21.0.0",
+    "@angular/router": "^21.0.0",
     "rxjs": "~7.8.0",
-    "tslib": "^2.3.0",
-    "zone.js": "~0.13.0"
+    "tslib": "^2.6.0",
+    "zone.js": "~0.15.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^16.2.0",
-    "@angular/cli": "~16.2.0",
-    "@angular/compiler-cli": "^16.2.0",
+    "@angular-devkit/build-angular": "^21.0.0",
+    "@angular/cli": "^21.0.0",
+    "@angular/compiler-cli": "^21.0.0",
     "@types/jasmine": "~4.3.0",
-    "jasmine-core": "~4.6.0",
+    "jasmine-core": "~5.2.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "ng-packagr": "^16.2.0",
-    "typescript": "~5.1.3"
+    "ng-packagr": "^21.0.0",
+    "typescript": "~5.9.0",
+    "prettier": "^3.0.0"
   }
 }

@@ -4,7 +4,6 @@
 
 export * from './lib/hss-query-builder-lib.service';
 export * from './lib/hss-query-builder-lib.component';
-export * from './lib/hss-query-builder-lib.module';
 
 export * from './lib/components/query-builder.interfaces';
 

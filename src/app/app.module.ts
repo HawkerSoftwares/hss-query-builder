@@ -1,44 +1,70 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
-
-// Our Query Builder Module 
-import { HssQueryBuilderModule } from 'projects/hss-query-builder-lib/src/public-api';
-
-// Angular Material 
-import { MatButtonModule } from '@angular/material/button';
+// Angular Material Modules
 import { MatCardModule } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
-import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
+// Our Query Builder Module and Directives
+import {
+  HssQueryBuilderLibComponent,
+  QueryInputDirective,
+  QueryOperatorDirective,
+  QueryFieldDirective,
+  QueryEntityDirective,
+  QueryButtonGroupDirective,
+  QuerySwitchGroupDirective,
+  QueryRemoveButtonDirective,
+  QueryEmptyWarningDirective,
+  QueryArrowIconDirective
+} from 'projects/hss-query-builder-lib/src/public-api';
 
 // Main component
 import { AppComponent } from './app.component';
+
 @NgModule({
   declarations: [
     AppComponent
   ],
   imports: [
-    FormsModule,
     BrowserModule,
-    HssQueryBuilderModule,
+    BrowserAnimationsModule,
+    FormsModule,
     ReactiveFormsModule,
-    NoopAnimationsModule,
+    HssQueryBuilderLibComponent,
+    // Query Builder Directives
+    QueryInputDirective,
+    QueryOperatorDirective,
+    QueryFieldDirective,
+    QueryEntityDirective,
+    QueryButtonGroupDirective,
+    QuerySwitchGroupDirective,
+    QueryRemoveButtonDirective,
+    QueryEmptyWarningDirective,
+    QueryArrowIconDirective,
+    // Material Modules
+    MatCardModule,
     MatButtonModule,
-    MatCheckboxModule,
+    MatIconModule,
+    MatFormFieldModule,
     MatSelectModule,
     MatInputModule,
+    MatRadioModule,
+    MatCheckboxModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatRadioModule,
-    MatIconModule,
-    MatCardModule
+    MatTooltipModule
   ],
   providers: [],
   bootstrap: [AppComponent]

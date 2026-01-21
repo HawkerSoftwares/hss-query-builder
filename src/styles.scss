@@ -1,4 +1,96 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+// Import Angular Material theming - Updated for Angular 21
+@use '@angular/material' as mat;
+
+// Include the common styles for Angular Material
+@include mat.core();
+
+// Define a custom theme using the new API
+$my-theme: mat.define-theme((color: (theme-type: light,
+        primary: mat.$violet-palette,
+        tertiary: mat.$cyan-palette,
+      ),
+      typography: (brand-family: 'Roboto, "Helvetica Neue", sans-serif',
+        plain-family: 'Roboto, "Helvetica Neue", sans-serif',
+      ),
+      density: (scale: 0)));
+
+// Include theme styles for all components
+@include mat.all-component-themes($my-theme);
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  background-color: #f5f5f5;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+// Custom styles for Material arrow icon in query builder
+.mat-arrow-icon {
+  transition: transform 0.3s ease;
+}
+
+.q-collapsed .mat-arrow-icon {
+  transform: rotate(90deg);
+}
+
+// Protect Material sections from Bootstrap interference
+.demo-container {
+
+  // Reset Bootstrap's box-sizing for Material components
+  .mat-mdc-card,
+  .mat-mdc-form-field,
+  .mat-mdc-button,
+  .mat-mdc-icon-button {
+    box-sizing: border-box !important;
+
+    * {
+      box-sizing: border-box !important;
+    }
+  }
+
+  // Ensure Material buttons don't get Bootstrap styling
+  button.mat-mdc-button,
+  button.mat-mdc-icon-button {
+    border: none !important;
+    background: transparent;
+  }
+}
+
+// Bootstrap container - let Bootstrap styles work here
+.bootstrap-container {
+  // Bootstrap styles will apply naturally here
+  padding: 1rem;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+}
+
+// Improve spacing
+.me-2 {
+  margin-right: 0.5rem !important;
+}
+
+.me-3 {
+  margin-right: 1rem !important;
+}
+
+.ms-2 {
+  margin-left: 0.5rem !important;
+}
+
+// Query builder custom styles
+.q-inline-block-display {
+  display: inline-block;
+}
