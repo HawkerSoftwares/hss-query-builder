@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 // Our Query Builder Module 
-import { HssQueryBuilderModule } from 'projects/hss-query-builder-lib/src/public-api';
+import { HssQueryBuilderLibComponent } from 'projects/hss-query-builder-lib/src/public-api';
 
 // Main component
 import { AppComponent } from './app.component';
@@ -14,7 +14,7 @@ import { AppComponent } from './app.component';
   imports: [
     FormsModule,
     BrowserModule,
-    HssQueryBuilderModule,
+    HssQueryBuilderLibComponent,
     ReactiveFormsModule
   ],
   providers: [],

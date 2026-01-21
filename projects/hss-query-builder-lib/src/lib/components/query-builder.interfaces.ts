@@ -1,4 +1,3 @@
-import { ValidationErrors } from '@angular/forms';
 
 export interface RuleSet {
   condition: string;

@@ -4,7 +4,9 @@ import {
   NG_VALUE_ACCESSOR,
   NG_VALIDATORS,
   ValidationErrors,
-  Validator
+  Validator,
+  FormsModule,
+  ReactiveFormsModule
 } from '@angular/forms';
 import {
   ButtonGroupContext,
@@ -49,8 +51,10 @@ import {
     QuerySwitchGroupDirective,
     QueryRemoveButtonDirective,
     QueryEmptyWarningDirective,
-    QueryArrowIconDirective
+    QueryArrowIconDirective,
+    QUERY_BUILDER_COMPONENTS
 } from './components';
+import { CommonModule } from '@angular/common';
 
 
 export const CONTROL_VALUE_ACCESSOR: any = {
@@ -69,7 +73,12 @@ export const VALIDATOR: any = {
   selector: 'hss-query-builder',
   templateUrl: './hss-query-builder-lib.component.html',
   styleUrls: ['./hss-query-builder-lib.component.scss'],
-  standalone: false,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule, 
+    QUERY_BUILDER_COMPONENTS
+  ],
   providers: [CONTROL_VALUE_ACCESSOR, VALIDATOR]
 })
 export class HssQueryBuilderLibComponent implements OnInit, OnChanges, ControlValueAccessor, Validator {

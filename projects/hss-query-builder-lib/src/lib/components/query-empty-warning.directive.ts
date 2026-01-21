@@ -1,6 +1,6 @@
 import { Directive, TemplateRef } from '@angular/core';
 
-@Directive({selector: '[queryEmptyWarning]', standalone: false})
+@Directive({selector: '[queryEmptyWarning]'})
 export class QueryEmptyWarningDirective {
   constructor(public template: TemplateRef<any>) {}
 }
