@@ -12,6 +12,26 @@
 
 ![HSS Query Builder Demo](docs/images/demo-screenshot.png)
 
+<p align="center">
+  <a href="https://brainzo.fun">
+    <img src="docs/images/brainzo-banner.jpg" width="100%" alt="Brainzo.fun - Games That Grow Minds">
+  </a>
+</p>
+
+<p align="center">
+  <b>Looking for a fun way for kids to learn?</b><br>
+  Check out <b><a href="https://brainzo.fun">Brainzo.fun</a></b> - The ultimate kids learning app for ages 4-15!<br>
+  <i>Quizzes • Puzzles • Alphabet Games • Number Activities • Offline Support</i>
+</p>
+
+<p align="center">
+  <a href="https://brainzo.fun">
+    <img src="https://img.shields.io/badge/Explore-Brainzo.fun-blueviolet?style=for-the-badge" alt="Explore Brainzo">
+  </a>
+</p>
+
+---
+
 ---
 
 ## 🌟 Why Choose HSS Query Builder?
@@ -286,14 +306,6 @@ npm test
 - Firefox (latest)
 - Safari (latest)
 - Edge (latest)
-
-## 🚀 Other Projects
-
-Alongside this project, I’m also building a kids learning app called **[Brainzo.fun](https://brainzo.fun)**.
-
-It’s designed for children aged 4–15 and focuses on learning through games like quizzes, puzzles, alphabet games, and number activities. The app works offline and is built with a clean, kid-friendly UI.
-
-**More info:** [https://brainzo.fun](https://brainzo.fun)
 
 ## 📝 License
 

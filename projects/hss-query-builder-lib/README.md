@@ -10,6 +10,25 @@
 
 **Perfect for:** Enterprise applications, Admin panels, Data filtering, Advanced search, Report builders, Database query tools, Form builders, Rule engines.
 
+
+<p align="center">
+  <a href="https://brainzo.fun">
+    <img src="https://raw.githubusercontent.com/HawkerSoftwares/hss-query-builder/main/docs/images/brainzo-banner.jpg" width="100%" alt="Brainzo.fun - Games That Grow Minds">
+  </a>
+</p>
+
+<p align="center">
+  <b>Looking for a fun way for kids to learn?</b><br>
+  Check out <b><a href="https://brainzo.fun">Brainzo.fun</a></b> - The ultimate kids learning app for ages 4-15!<br>
+  <i>Quizzes • Puzzles • Alphabet Games • Number Activities • Offline Support</i>
+</p>
+
+<p align="center">
+  <a href="https://brainzo.fun">
+    <img src="https://img.shields.io/badge/Explore-Brainzo.fun-blueviolet?style=for-the-badge" alt="Explore Brainzo">
+  </a>
+</p>
+
 ---
 
 ## 🌟 Why Choose HSS Query Builder?
@@ -173,15 +192,7 @@ For detailed guides and advanced usage, visit our [GitHub Repository](https://gi
 - [Angular 21 Improvements Guide](https://github.com/HawkerSoftwares/hss-query-builder/blob/main/ANGULAR_21_IMPROVEMENTS.md)
 - [Material Design Integration](https://github.com/HawkerSoftwares/hss-query-builder/blob/main/MATERIAL_INTEGRATION.md)
 
-## � Other Projects
-
-Alongside this project, I’m also building a kids learning app called **[Brainzo.fun](https://brainzo.fun)**.
-
-It’s designed for children aged 4–15 and focuses on learning through games like quizzes, puzzles, alphabet games, and number activities. The app works offline and is built with a clean, kid-friendly UI.
-
-**More info:** [https://brainzo.fun](https://brainzo.fun)
-
-## �📝 License
+## 📝 License
 
 MIT © [Hawker Softwares](https://github.com/HawkerSoftwares)
 
