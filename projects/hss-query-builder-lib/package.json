@@ -1,26 +1,67 @@
 {
   "name": "hss-query-builder",
-  "version": "0.0.4",
-  "peerDependencies": {
-    "@angular/common": "^16.2.0",
-    "@angular/core": "^16.2.0"
-  },
-  "dependencies": {
-    "tslib": "^2.3.0"
-  },
-  "sideEffects": false,
+  "version": "0.0.6",
+  "description": "Modern Angular 21 Query Builder with Signals, Material Design & Bootstrap - Build complex queries with drag-and-drop interface. Supports nested conditions, custom templates, and full TypeScript type safety.",
+  "author": "HSS (Hawker Softwares)",
   "license": "MIT",
-  "author": "HSS",
-  "description": "A modernized Angular 16 query builder based on jQuery QueryBuilder. Support for heavy customization with Angular components and provides a flexible way to handle custom data types.  Angular version 16, 15, 14, 13, 12, 11, 10, 9,8,6,4 ",
-  "keywords": [
-    "angular 2",
-    "angular 4 query builder",
-    "angular query builder",
-    "query builder",
-    "angular latest query builder"
-  ],
+  "homepage": "https://github.com/HawkerSoftwares/hss-query-builder#readme",
   "repository": {
     "type": "git",
     "url": "https://github.com/HawkerSoftwares/hss-query-builder"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/HawkerSoftwares/hss-query-builder/issues"
+  },
+  "keywords": [
+    "angular",
+    "angular21",
+    "angular-21",
+    "query-builder",
+    "query-builder-component",
+    "angular-query-builder",
+    "signals",
+    "angular-signals",
+    "material-design",
+    "angular-material",
+    "bootstrap",
+    "typescript",
+    "rxjs",
+    "form-builder",
+    "filter-builder",
+    "search-builder",
+    "rule-builder",
+    "condition-builder",
+    "angular-component",
+    "ui-component",
+    "material-ui",
+    "reactive-forms",
+    "template-driven-forms",
+    "control-value-accessor",
+    "custom-validator",
+    "onpush",
+    "change-detection",
+    "performance",
+    "modern-angular",
+    "angular-best-practices",
+    "enterprise",
+    "production-ready",
+    "customizable",
+    "extensible",
+    "accessible",
+    "responsive",
+    "mobile-friendly",
+    "nested-conditions",
+    "drag-drop",
+    "type-safe",
+    "hss-query-builder"
+  ],
+  "peerDependencies": {
+    "@angular/common": "^21.0.0",
+    "@angular/core": "^21.0.0",
+    "@angular/forms": "^21.0.0"
+  },
+  "dependencies": {
+    "tslib": "^2.6.0"
+  },
+  "sideEffects": false
 }

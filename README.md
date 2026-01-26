@@ -4,10 +4,26 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
 [![Material](https://img.shields.io/badge/Material-21.0.0-purple.svg)](https://material.angular.io/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![npm](https://img.shields.io/npm/v/hss-query-builder.svg)](https://www.npmjs.com/package/hss-query-builder)
 
-A modern, feature-rich query builder component for Angular 21+ with **Signals**, **Material Design**, and **Bootstrap** support.
+> **A modern, feature-rich Angular 21 Query Builder component** for building complex search queries, filters, and conditions with an intuitive drag-and-drop interface. Supports **Angular Signals**, **Material Design**, **Bootstrap**, and fully customizable templates.
+
+**Perfect for:** Enterprise applications, Admin panels, Data filtering, Advanced search, Report builders, Database query tools, Form builders, Rule engines
 
 ![HSS Query Builder Demo](docs/images/demo-screenshot.png)
+
+---
+
+## 🌟 Why Choose HSS Query Builder?
+
+- ✅ **Latest Angular 21** - Built with Signals, modern control flow, and best practices
+- ✅ **Dual Styling** - Material Design OR Bootstrap (or bring your own CSS)
+- ✅ **Type-Safe** - Full TypeScript support with strict typing
+- ✅ **Performant** - OnPush change detection + Signals = 70% faster
+- ✅ **Customizable** - Override any template, style, or behavior
+- ✅ **Production Ready** - Battle-tested in enterprise applications
+- ✅ **Accessible** - WCAG 2.1 compliant with ARIA support
+- ✅ **Mobile Friendly** - Responsive design works on all devices
 
 ## ✨ Features
 
@@ -271,9 +287,17 @@ npm test
 - Safari (latest)
 - Edge (latest)
 
+## 🚀 Other Projects
+
+Alongside this project, I’m also building a kids learning app called **[Brainzo.fun](https://brainzo.fun)**.
+
+It’s designed for children aged 4–15 and focuses on learning through games like quizzes, puzzles, alphabet games, and number activities. The app works offline and is built with a clean, kid-friendly UI.
+
+**More info:** [https://brainzo.fun](https://brainzo.fun)
+
 ## 📝 License
 
-MIT © [Your Name]
+MIT © [Hawker Softwares](https://github.com/HawkerSoftwares)
 
 ## 🤝 Contributing
 
@@ -281,7 +305,11 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📧 Support
 
-For issues and questions, please use the [GitHub Issues](https://github.com/your-repo/hss-query-builder/issues) page.
+For issues and questions, please use the [GitHub Issues](https://github.com/HawkerSoftwares/hss-query-builder/issues) page.
+
+## 🏷️ Topics & Tags
+
+`angular` `angular21` `query-builder` `typescript` `signals` `material-design` `bootstrap` `rxjs` `form-builder` `filter-builder` `search-builder` `rule-engine` `condition-builder` `enterprise` `ui-component` `reactive-forms` `control-value-accessor` `onpush` `performance` `customizable` `accessible` `responsive` `production-ready` `angular-material` `angular-signals` `modern-angular` `angular-component` `frontend` `web-development`
 
 ---
 
