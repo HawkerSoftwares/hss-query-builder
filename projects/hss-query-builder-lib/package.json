@@ -1,6 +1,6 @@
 {
   "name": "hss-query-builder",
-  "version": "0.0.7",
+  "version": "1.0.0",
   "description": "Modern Angular 21 Query Builder with Signals, Material Design & Bootstrap - Build complex queries with drag-and-drop interface. Supports nested conditions, custom templates, and full TypeScript type safety.",
   "author": "HSS (Hawker Softwares)",
   "license": "MIT",

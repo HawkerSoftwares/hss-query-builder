@@ -31,6 +31,18 @@
 
 ---
 
+<p align="center">
+  <a href="https://HawkerSoftwares.github.io/hss-query-builder/">
+    <img src="https://img.shields.io/badge/Live%20Demo-GitHub%20Pages-blue?style=for-the-badge&logo=github" alt="Live Demo">
+  </a>
+</p>
+
+<p align="center">
+  🚀 <b>Check out the interactive demo:</b> <a href="https://HawkerSoftwares.github.io/hss-query-builder/">https://HawkerSoftwares.github.io/hss-query-builder/</a>
+</p>
+
+---
+
 ## 🌟 Why Choose HSS Query Builder?
 
 - ✅ **Latest Angular 21** - Built with Signals, modern control flow, and best practices.
