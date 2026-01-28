@@ -1,71 +1,120 @@
 .demo-container {
-  max-width: 1400px;
-  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2rem;
   padding: 2rem;
   background-color: #fafafa;
   min-height: 100vh;
+  margin: 0 auto;
+
+  @media (max-width: 1024px) {
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    gap: 1rem;
+  }
+}
+
+.main-content {
+  flex: 0 1 700px;
+  max-width: 700px;
+  width: 100%;
+
+  @media (max-width: 700px) {
+    max-width: 100%;
+  }
+}
+
+.ad-column {
+  flex: 0 0 160px;
+  position: sticky;
+  top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+  @media (max-width: 1024px) {
+    display: none; // Hide ads on smaller screens to prioritize content
+  }
+
+  .ad-banner {
+    width: 160px;
+    height: 600px;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
 }
 
 .header-section {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
 
   h1 {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 500;
     color: #3f51b5;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
   }
 
   .subtitle {
-    font-size: 1.1rem;
+    font-size: 1rem;
     color: #666;
   }
 }
 
 .demo-section {
-  margin-bottom: 3rem;
+  margin-bottom: 2rem;
 
   .section-title {
-    font-size: 1.8rem;
+    font-size: 1.4rem;
     font-weight: 500;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     color: #333;
   }
 }
 
 .query-card {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
 
   mat-card-content {
-    padding: 1.5rem;
+    padding: 1rem;
   }
 }
 
 // Material Form Field Spacing
 .field-control {
-  margin-right: 0.75rem;
-  min-width: 180px;
+  margin-right: 0.5rem;
+  min-width: 140px;
 }
 
 .operator-control {
-  margin-right: 0.75rem;
-  width: 140px;
+  margin-right: 0.5rem;
+  width: 110px;
 }
 
 .value-control {
-  margin-right: 0.75rem;
-  min-width: 200px;
+  margin-right: 0.5rem;
+  min-width: 150px;
 }
 
 .value-control-small {
-  margin-right: 0.75rem;
-  width: 120px;
+  margin-right: 0.5rem;
+  width: 90px;
 }
 
 .value-control-wide {
-  margin-right: 0.75rem;
-  min-width: 300px;
+  margin-right: 0.5rem;
+  min-width: 220px;
 }
 
 .value-checkbox {
@@ -191,5 +240,47 @@
 
   .q-inline-block-display {
     display: inline-block;
+  }
+
+  // Make Material controls even more compact
+  .mat-mdc-form-field {
+    font-size: 13px;
+
+    .mat-mdc-text-field-wrapper {
+      padding-top: 0 !important;
+      padding-bottom: 0 !important;
+    }
+
+    .mat-mdc-form-field-flex {
+      height: 38px !important; // Match Bootstrap height
+      align-items: center !important;
+    }
+
+    .mat-mdc-form-field-infix {
+      padding-top: 4px !important;
+      padding-bottom: 4px !important;
+      min-height: auto !important;
+    }
+
+    .mat-mdc-select-value {
+      font-size: 13px !important;
+    }
+
+    .mat-mdc-input-element {
+      font-size: 13px !important;
+    }
+  }
+
+  // Adjust button sizes to match
+  .mat-mdc-icon-button {
+    width: 38px !important;
+    height: 38px !important;
+    padding: 7px !important;
+
+    .mat-icon {
+      font-size: 20px !important;
+      width: 20px !important;
+      height: 20px !important;
+    }
   }
 }

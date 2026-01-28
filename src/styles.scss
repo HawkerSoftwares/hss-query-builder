@@ -14,7 +14,7 @@ $my-theme: mat.define-theme((color: (theme-type: light,
       typography: (brand-family: 'Roboto, "Helvetica Neue", sans-serif',
         plain-family: 'Roboto, "Helvetica Neue", sans-serif',
       ),
-      density: (scale: 0)));
+      density: (scale: -3)));
 
 // Include theme styles for all components
 @include mat.all-component-themes($my-theme);
@@ -32,7 +32,7 @@ body {
 }
 
 .container {
-  max-width: 1400px;
+  max-width: 700px;
   margin: 0 auto;
 }
 
