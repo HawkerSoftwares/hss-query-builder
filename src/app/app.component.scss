@@ -42,16 +42,186 @@
     width: 160px;
     height: 600px;
     background: #fff;
-    border-radius: 8px;
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     }
   }
+
+  // GoVenue Custom Banner Styles
+  .go-venue-banner {
+    background: linear-gradient(180deg, #fff9f0 0%, #fff 100%);
+    border: 1px solid #ffe8cc;
+
+    .ad-content {
+      padding: 20px 15px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 20px;
+    }
+
+    .gv-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+
+      .gv-v {
+        background: #f76707;
+        color: white;
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 24px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(247, 103, 7, 0.3);
+      }
+
+      .gv-text {
+        color: #f76707;
+        font-weight: 700;
+        font-size: 18px;
+        letter-spacing: -0.5px;
+      }
+    }
+
+    .gv-badge {
+      background: #fff4e6;
+      color: #d9480f;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+
+    .gv-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #212529;
+      line-height: 1.2;
+      margin: 0;
+    }
+
+    .gv-desc {
+      font-size: 13px;
+      color: #495057;
+      line-height: 1.4;
+      margin: 0;
+    }
+
+    .gv-button {
+      background: #f76707;
+      color: white;
+      font-weight: 600;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: auto;
+      width: 100%;
+      box-shadow: 0 4px 12px rgba(247, 103, 7, 0.2);
+    }
+
+    .gv-footer {
+      font-size: 11px;
+      color: #adb5bd;
+      margin-top: 10px;
+    }
+  }
+
+  // Brainzo Custom Banner Styles
+  .brainzo-banner {
+    background: linear-gradient(180deg, #f0f7ff 0%, #fff 100%);
+    border: 1px solid #d0e7ff;
+
+    .ad-content {
+      padding: 20px 15px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 20px;
+    }
+
+    .bz-logo {
+      img {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(63, 81, 181, 0.2);
+        padding: 0;
+        object-fit: cover;
+      }
+    }
+
+    .bz-badge {
+      background: #eef2ff;
+      color: #3f51b5;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+    }
+
+    .bz-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #3f51b5;
+      line-height: 1.2;
+      margin: 0;
+    }
+
+    .bz-games-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 5px 0;
+
+      span {
+        font-size: 11px;
+        color: #5c6bc0;
+        font-weight: 500;
+        text-align: left;
+        display: block;
+      }
+    }
+
+    .bz-button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-weight: 600;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: auto;
+      width: 100%;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .bz-footer {
+      font-size: 11px;
+      color: #9fa8da;
+      margin-top: 10px;
+    }
+  }
+}
+
+.ad-link {
+  text-decoration: none;
+  display: block;
 }
 
 .header-section {

@@ -1,11 +1,26 @@
 <div class="demo-container">
   <!-- Left Ad Column -->
   <aside class="ad-column left-ad">
-    <div class="ad-banner">
-      <a href="https://brainzo.fun" target="_blank">
-        <img src="assets/brainzo_ad_vertical_left.png" alt="Brainzo.fun - Learning Games">
-      </a>
-    </div>
+    <a href="https://brainzo.fun" target="_blank" class="ad-link">
+      <div class="ad-banner brainzo-banner">
+        <div class="ad-content">
+          <div class="bz-logo">
+            <img src="assets/brainzo-logo.png" alt="Brainzo Logo">
+          </div>
+          <div class="bz-badge">Let's Play!</div>
+          <h3 class="bz-title">Games That Grow Minds</h3>
+          <div class="bz-games-list">
+            <span>• Quiz Adventure</span>
+            <span>• Math Ninja</span>
+            <span>• Word Builder</span>
+            <span>• Alphabet Pop</span>
+            <span>• Memory Match</span>
+          </div>
+          <div class="bz-button">Start Adventure</div>
+          <div class="bz-footer">brainzo.fun</div>
+        </div>
+      </div>
+    </a>
   </aside>
 
   <div class="main-content">
@@ -56,7 +71,8 @@
             <!-- Custom Switch Group (AND/OR) -->
             <ng-container *querySwitchGroup="let ruleset; let onChange=onChange">
               @if (ruleset) {
-              <mat-radio-group [(ngModel)]="ruleset.condition" (ngModelChange)="onChange($event)" class="condition-group">
+              <mat-radio-group [(ngModel)]="ruleset.condition" (ngModelChange)="onChange($event)"
+                class="condition-group">
                 <mat-radio-button value="and" class="condition-radio">AND</mat-radio-button>
                 <mat-radio-button value="or" class="condition-radio">OR</mat-radio-button>
               </mat-radio-group>
@@ -230,10 +246,20 @@
 
   <!-- Right Ad Column -->
   <aside class="ad-column right-ad">
-    <div class="ad-banner">
-      <a href="https://brainzo.fun" target="_blank">
-        <img src="assets/brainzo_ad_vertical_right.png" alt="Brainzo.fun - Learning Made Fun">
-      </a>
-    </div>
+    <a href="https://govenue.live/" target="_blank" class="ad-link">
+      <div class="ad-banner go-venue-banner">
+        <div class="ad-content">
+          <div class="gv-logo">
+            <span class="gv-v">V</span>
+            <span class="gv-text">GoVenue</span>
+          </div>
+          <div class="gv-badge">#1 Venue Solution</div>
+          <h3 class="gv-title">Smart Venue Booking & Management</h3>
+          <p class="gv-desc">Manage resorts, halls, and bookings from one dashboard.</p>
+          <div class="gv-button">Request Demo</div>
+          <div class="gv-footer">govenue.live</div>
+        </div>
+      </div>
+    </a>
   </aside>
 </div>
