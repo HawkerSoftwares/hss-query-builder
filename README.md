@@ -5,8 +5,11 @@
 [![Material](https://img.shields.io/badge/Material-21.0.0-purple.svg)](https://material.angular.io/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![npm](https://img.shields.io/npm/v/hss-query-builder.svg)](https://www.npmjs.com/package/hss-query-builder)
+[![Demo](https://img.shields.io/badge/Demo-Live-brightgreen.svg)](https://HawkerSoftwares.github.io/hss-query-builder/)
 
 > **A modern, feature-rich Angular 21 Query Builder component** for building complex search queries, filters, and conditions with an intuitive drag-and-drop interface. Supports **Angular Signals**, **Material Design**, **Bootstrap**, and fully customizable templates.
+
+### 🌐 [Live Demo](https://HawkerSoftwares.github.io/hss-query-builder/)
 
 **Perfect for:** Enterprise applications, Admin panels, Data filtering, Advanced search, Report builders, Database query tools, Form builders, Rule engines
 

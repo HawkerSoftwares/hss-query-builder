@@ -1,5 +1,7 @@
 # HSS Query Builder - Material Design Demo
 
+### 🌐 [Live Online Demo](https://HawkerSoftwares.github.io/hss-query-builder/)
+
 ## 🎨 Features Demonstrated
 
 This demo application showcases the HSS Query Builder library with:

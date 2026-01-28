@@ -3,6 +3,7 @@
 ## Project: hss-query-builder
 **Date**: January 21, 2026  
 **Status**: ✅ Complete
+**Live Demo**: [https://HawkerSoftwares.github.io/hss-query-builder/](https://HawkerSoftwares.github.io/hss-query-builder/)
 
 ---
 
